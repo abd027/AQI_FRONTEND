@@ -3,6 +3,8 @@
  * Connects to Python FastAPI backend
  */
 
+import type { CityRanking } from './types';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 
 /**
@@ -132,6 +134,14 @@ export interface AqiData {
     dust?: number | null;
     uv_index?: number | null;
   };
+  // Extended fields for frontend components
+  usEpaAqi?: number;
+  globalAqi?: number;
+  localAqi?: number;
+  pm25Concentration?: number;
+  aqiCategory?: string;
+  aqiColor?: string;
+  dominantPollutant?: string;
 }
 
 // New enhanced structured response interfaces
@@ -185,7 +195,8 @@ export interface AqiTimePoint {
   aqi: number;
 }
 
-import type { CityRanking } from './types';
+// Export CityRanking type from types.ts to ensure consistency
+export type { CityRanking };
 
 /**
  * Transform backend API response to frontend format
@@ -211,6 +222,7 @@ export function transformBackendResponse(backendData: any): AqiData {
     lastUpdated: backendData.lastUpdated || backendData.last_updated || '',
     location: backendData.location,
     dominant_pollutant: backendData.dominant_pollutant,
+    dominantPollutant: backendData.dominant_pollutant,
     color: backendData.color,
     current: current,
   };
@@ -294,8 +306,7 @@ export async function fetchCityRankings(): Promise<CityRanking[]> {
     
     // Ensure we return an array
     if (Array.isArray(data)) {
-      // Cast the data to match the stricter type
-      return data as CityRanking[];
+      return data;
     }
     
     // If the response has an error, return empty array

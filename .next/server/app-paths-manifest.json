@@ -1,12 +1,17 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/city-rankings/page": "app/city-rankings/page.js",
   "/enhanced-aqi/page": "app/enhanced-aqi/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/forgot-password/page": "app/forgot-password/page.js",
   "/login/page": "app/login/page.js",
+  "/map/page": "app/map/page.js",
   "/my-room/page": "app/my-room/page.js",
   "/notifications/page": "app/notifications/page.js",
   "/page": "app/page.js",
   "/profile/page": "app/profile/page.js",
   "/register/page": "app/register/page.js",
-  "/subscriptions/page": "app/subscriptions/page.js"
+  "/reset-password/page": "app/reset-password/page.js",
+  "/subscriptions/page": "app/subscriptions/page.js",
+  "/verify-email/page": "app/verify-email/page.js"
 }

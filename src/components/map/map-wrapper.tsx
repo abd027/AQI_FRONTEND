@@ -247,7 +247,7 @@ export default function MapWrapper({
       >
         <MapContainer
           {...mapProps}
-          whenCreated={handleMapCreated}
+          ref={handleMapCreated}
           style={{ width: "100%", height: "100%" }}
         >
           {children}
