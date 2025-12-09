@@ -63,7 +63,9 @@ export default function CityRankingsPage() {
                   <span className="flex h-3 w-3 rounded-full bg-yellow-500 ml-2" title="Reconnecting..."></span>
                 )}
                 {!loading && isRefreshing && (
-                  <RefreshCw className="size-4 animate-spin text-muted-foreground" title="Updating in background..." />
+                  <span title="Updating in background...">
+                    <RefreshCw className="size-4 animate-spin text-muted-foreground" />
+                  </span>
                 )}
               </h1>
               <p className="text-muted-foreground mt-2">
