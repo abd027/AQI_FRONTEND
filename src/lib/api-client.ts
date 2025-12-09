@@ -185,108 +185,7 @@ export interface AqiTimePoint {
   aqi: number;
 }
 
-export interface CityRanking {
-  rank: number;
-  city: string;
-  country: string;
-  aqi: number;
-  category: string;
-  dominantPollutant: string;
-  trend: Array<{ time: string; aqi: number }>;
-  lastUpdated: string;
-  region: string;
-  pm25?: number;
-  pm10?: number;
-  aqi_pm25?: number;
-  aqi_pm10?: number;
-}
-
-/**
- * Transform backend API response to frontend format
- * Handles snake_case to camelCase conversion and data structure mapping
- */
-export function transformBackendResponse(backendData: any): AqiData {
-  const current = backendData.current || {};
-
-  return {
-    city: backendData.city,
-    aqi: backendData.aqi,
-    category: backendData.category,
-    healthAdvice: backendData.health_advice || backendData.healthAdvice || '',
-    pollutants: [
-      { name: 'PM2.5', value: current.pm2_5 ?? null, unit: 'µg/m³' },
-      { name: 'PM10', value: current.pm10 ?? null, unit: 'µg/m³' },
-      { name: 'O₃', value: current.ozone ?? null, unit: 'µg/m³' },
-      { name: 'NO₂', value: current.nitrogen_dioxide ?? null, unit: 'µg/m³' },
-      { name: 'CO', value: current.carbon_monoxide ?? null, unit: 'µg/m³' },
-      { name: 'SO₂', value: current.sulphur_dioxide ?? null, unit: 'µg/m³' },
-    ].filter(p => p.value !== null),
-    weather: backendData.weather || undefined,
-    lastUpdated: backendData.lastUpdated || backendData.last_updated || '',
-    location: backendData.location,
-    dominant_pollutant: backendData.dominant_pollutant,
-    color: backendData.color,
-    current: current,
-  };
-}
-
-/**
- * Fetch AQI data for a city
- */
-export async function fetchAQIData(city: string = 'New York'): Promise<AqiData | null> {
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/aqi?city=${encodeURIComponent(city)}`, {
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        console.warn(`Failed to fetch AQI data for ${city}: ${response.statusText}`);
-        return null;
-      }
-      return await response.json();
-    } catch (fetchError: any) {
-      clearTimeout(timeoutId);
-      if (fetchError.name === 'AbortError') {
-        console.warn(`Request timeout for ${city} - server took too long to respond`);
-        return null;
-      }
-      console.warn(`Error fetching AQI data for ${city}:`, fetchError);
-      return null;
-    }
-  } catch (error) {
-    console.error('Error fetching AQI data:', error);
-    return null;
-  }
-}
-
-/**
- * Fetch AQI trend data with retry logic
- */
-export async function fetchAQITrend(city: string = 'New York'): Promise<AqiTimePoint[]> {
-  try {
-    const response = await fetchWithRetry(
-      `${API_BASE_URL}/api/aqi/trend?city=${encodeURIComponent(city)}`,
-      {},
-      3 // 3 retries
-    );
-
-    if (!response || !response.ok) {
-      console.warn(`Failed to fetch AQI trend data for ${city}: ${response?.statusText || 'Unknown error'} (status: ${response?.status || 'N/A'})`);
-      return [];
-    }
-
-    const data = await response.json();
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.error(`Error fetching AQI trend for ${city}:`, error);
-    return [];
-  }
-}
+import type { CityRanking } from './types';
 
 /**
  * Fetch city rankings
@@ -308,7 +207,8 @@ export async function fetchCityRankings(): Promise<CityRanking[]> {
     
     // Ensure we return an array
     if (Array.isArray(data)) {
-      return data;
+      // Cast the data to match the stricter type
+      return data as CityRanking[];
     }
     
     // If the response has an error, return empty array
